@@ -27,6 +27,8 @@ import UIKit
     @IBInspectable open var rightmostPointPadding: CGFloat = 50
     /// How much space should be between each data point.
     @IBInspectable open var dataPointSpacing: CGFloat = 40
+    /// How long the animation interval is between two points.
+    @IBInspectable open var pointAnimStaggerTime: Double = 0
     
     @IBInspectable var direction_: Int {
         get { return direction.rawValue }
@@ -301,7 +303,7 @@ import UIKit
                 referenceLineThickness: referenceLines.referenceLineThickness,
                 referenceLineSettings: referenceLines)
             
-            referenceLineView?.set(range: self.range)
+            referenceLineView?.setRange(range: self.range)
             
             self.addSubview(referenceLineView!)
         }
@@ -343,7 +345,7 @@ import UIKit
             setup()
             
             if(shouldAnimateOnStartup) {
-                startAnimations(withStaggerValue: 0.15)
+                startAnimations(withStaggerValue: pointAnimStaggerTime)
             }
             
             // We're done setting up.
@@ -411,7 +413,7 @@ import UIKit
         updateFramesForGradientLayers(viewportWidth: viewportWidth, viewportHeight: viewportHeight)
         
         // Reference lines should extend over the entire viewport
-        referenceLineView?.set(viewportWidth: viewportWidth, viewportHeight: viewportHeight)
+        referenceLineView?.setFrame(viewportWidth: viewportWidth, viewportHeight: viewportHeight)
         
         self.contentSize.height = viewportHeight
     }
@@ -479,7 +481,7 @@ import UIKit
         plot.graphViewDrawingDelegate = self
         self.plots.append(plot)
         initPlot(plot: plot, activePointsInterval: activePointsInterval)
-        startAnimations(withStaggerValue: 0.15)
+        startAnimations(withStaggerValue: pointAnimStaggerTime)
     }
     
     private func addReferenceLinesToGraph(referenceLines: ReferenceLines) {
@@ -726,7 +728,7 @@ import UIKit
             }
         }
         
-        referenceLineView?.set(range: range)
+        referenceLineView?.setRange(range: range)
     }
     
     private func viewportDidChange() {
@@ -981,7 +983,7 @@ fileprivate class SGVQueue<T> {
 
 // We have to be our own data source for interface builder.
 #if TARGET_INTERFACE_BUILDER
-public extension ScrollableGraphView : ScrollableGraphViewDataSource {
+extension ScrollableGraphView : ScrollableGraphViewDataSource {
     
     var numberOfDisplayItems: Int {
         get {

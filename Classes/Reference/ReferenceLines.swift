@@ -32,8 +32,8 @@ open class ReferenceLines {
     
     /// Whether or not to add labels to the intermediate reference lines.
     @IBInspectable open var shouldAddLabelsToIntermediateReferenceLines: Bool = true
-    /// Whether or not to add units specified by the referenceLineUnits variable to the labels on the intermediate reference lines.
-    @IBInspectable open var shouldAddUnitsToIntermediateReferenceLineLabels: Bool = false
+    /// Define where the unit labels will show. such as startOnly; middleOnly; endOnly; startAndEnd; all
+    @IBInspectable open var unitLabelPostionType: UnitLabelPostionType = UnitLabelPostionType.none
     
     // Reference Line Labels
     // #####################
@@ -43,8 +43,6 @@ open class ReferenceLines {
     /// The colour of the reference line labels.
     @IBInspectable open var referenceLineLabelColor: UIColor = UIColor.black
     
-    /// Whether or not to show the units on the reference lines.
-    @IBInspectable open var shouldShowReferenceLineUnits: Bool = true
     /// The units that the y-axis is in. This string is used for labels on the reference lines.
     @IBInspectable open var referenceLineUnits: String?
     /// The number of decimal places that should be shown on the reference line labels.
@@ -73,6 +71,16 @@ open class ReferenceLines {
     }
 }
 
+@objc public enum UnitLabelPostionType: Int {
+    case none
+    case startOnly
+    case middleOnly
+    case endOnly
+    case startAndMiddle
+    case middleAndEnd
+    case startAndEnd
+    case all
+}
 
 @objc public enum ScrollableGraphViewReferenceLinePosition : Int {
     case left

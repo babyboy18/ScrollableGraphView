@@ -13,7 +13,7 @@ internal class ReferenceLineDrawingView : UIView {
     private var rightLabelInset: CGFloat = 10
     
     // Store information about the ScrollableGraphView
-    private var currentRange: (min: Double, max: Double) = (0,100)
+    private var currentRange: (min: Double, max: Double) = (0, 100)
     private var topMargin: CGFloat = 10
     private var bottomMargin: CGFloat = 10
     
@@ -82,8 +82,16 @@ internal class ReferenceLineDrawingView : UIView {
             
             let numberFormatter = referenceNumberFormatter()
             
-            let maxString = numberFormatter.string(from: self.currentRange.max as NSNumber)! + units
-            let minString = numberFormatter.string(from: self.currentRange.min as NSNumber)! + units
+            var maxString = numberFormatter.string(from: self.currentRange.max as NSNumber)!
+            var unitType: [UnitLabelPostionType] = [.endOnly, .startAndEnd, .middleAndEnd, .all]
+            if (unitType.contains(self.settings.unitLabelPostionType)) {
+                maxString += units
+            }
+            var minString = numberFormatter.string(from: self.currentRange.min as NSNumber)!
+            unitType = [.startOnly, .startAndMiddle, .startAndEnd, .all]
+            if (unitType.contains(self.settings.unitLabelPostionType)) {
+                minString += units
+            }
             
             addLine(withTag: maxString, from: maxLineStart, to: maxLineEnd, in: referenceLinePath)
             addLine(withTag: minString, from: minLineStart, to: minLineEnd, in: referenceLinePath)
@@ -156,7 +164,8 @@ internal class ReferenceLineDrawingView : UIView {
             let numberFormatter = referenceNumberFormatter()
             var valueString = numberFormatter.string(from: value as NSNumber)!
             
-            if(self.settings.shouldAddUnitsToIntermediateReferenceLineLabels) {
+            let unitType: [UnitLabelPostionType] = [.middleOnly, .startAndMiddle, .middleAndEnd, .all]
+            if(unitType.contains(self.settings.unitLabelPostionType)) {
                 valueString += " \(units)"
             }
             
@@ -316,12 +325,12 @@ internal class ReferenceLineDrawingView : UIView {
     
     // Public functions to update the reference lines with any changes to the range and viewport (phone rotation, etc).
     // When the range changes, need to update the max for the new range, then update all the labels that are showing for the axis and redraw the reference lines.
-    func set(range: (min: Double, max: Double)) {
+    func setRange(range: (min: Double, max: Double)) {
         self.currentRange = range
         self.referenceLineLayer.path = createReferenceLinesPath().cgPath
     }
     
-    func set(viewportWidth: CGFloat, viewportHeight: CGFloat) {
+    func setFrame(viewportWidth: CGFloat, viewportHeight: CGFloat) {
         self.frame.size.width = viewportWidth
         self.frame.size.height = viewportHeight
         self.referenceLineLayer.path = createReferenceLinesPath().cgPath
