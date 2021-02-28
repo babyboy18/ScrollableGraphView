@@ -27,4 +27,9 @@ internal class GraphPoint {
         x = position.x
         y = position.y
     }
+    
+    init(x: CGFloat, y: CGFloat) {
+        self.x = x
+        self.y = y
+    }
 }

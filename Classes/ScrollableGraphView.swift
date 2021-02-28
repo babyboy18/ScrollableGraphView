@@ -24,7 +24,7 @@ import UIKit
     /// How far the first point on the graph should be placed from the left hand side of the view.
     @IBInspectable open var leftmostPointPadding: CGFloat = 50
     /// How far the final point on the graph should be placed from the right hand side of the view.
-    @IBInspectable open var rightmostPointPadding: CGFloat = 50
+    @IBInspectable open var rightmostPointPadding: CGFloat = 20
     /// How much space should be between each data point.
     @IBInspectable open var dataPointSpacing: CGFloat = 40
     /// How long the animation interval is between two points.
@@ -357,6 +357,10 @@ import UIKit
             // points we can actually see.
             viewportWidth = self.frame.width
             viewportHeight = self.frame.height
+            
+            let numberOfDataPoints = dataSource.numberOfPoints()
+            totalGraphWidth = graphWidth(forNumberOfDataPoints: numberOfDataPoints)
+            self.contentSize = CGSize(width: totalGraphWidth, height: viewportHeight)
             
             // If the scrollview has scrolled anywhere, we need to update the offset
             // and move around our drawing views.

@@ -11,7 +11,7 @@ class ViewController: UIViewController, ScrollableGraphViewDataSource {
     @IBOutlet var graphView: ScrollableGraphView!
     @IBOutlet var reloadButton: UIButton!
     
-    var numberOfItems = 90
+    var numberOfItems = 1
     lazy var plotOneData: [Double] = self.generateRandomData(self.numberOfItems, max: 100, shouldIncludeOutliers: true)
     lazy var plotTwoData: [Double] = self.generateRandomData(self.numberOfItems, max: 80, shouldIncludeOutliers: false)
     override var prefersStatusBarHidden : Bool {
@@ -36,6 +36,7 @@ class ViewController: UIViewController, ScrollableGraphViewDataSource {
     // MARK: Button Clicks
     
     @IBAction func reloadDidClick(_ sender: Any) {
+        self.numberOfItems = 90
         plotOneData = self.generateRandomData(self.numberOfItems, max: 100, shouldIncludeOutliers: true)
         plotTwoData = self.generateRandomData(self.numberOfItems, max: 80, shouldIncludeOutliers: false)
         graphView.reload()

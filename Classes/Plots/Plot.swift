@@ -35,7 +35,7 @@ open class Plot {
     private var previousTimestamp: CFTimeInterval = 0
     private var currentTimestamp: CFTimeInterval = 0
     
-    private var graphPoints = [GraphPoint]()
+    private var graphPoints = [Int: GraphPoint]()
     
     deinit {
         displayLink?.invalidate()
@@ -147,13 +147,14 @@ open class Plot {
     }
     
     internal func createPlotPoints(numberOfPoints: Int, range: (min: Double, max: Double)) {
+        graphPoints.removeAll()
         for i in 0 ..< numberOfPoints {
             
             let value = range.min
             
             let position = graphViewDrawingDelegate.calculatePosition(atIndex: i, value: value)
             let point = GraphPoint(position: position)
-            graphPoints.append(point)
+            graphPoints.updateValue(point, forKey: i)
         }
     }
     
@@ -171,25 +172,33 @@ open class Plot {
             let value = data[dataPosition]
             
             let newPosition = graphViewDrawingDelegate.calculatePosition(atIndex: i, value: value)
-            graphPoints[i].x = newPosition.x
-            graphPoints[i].y = newPosition.y
+            if graphPoints.keys.contains(i), let point = graphPoints[i] {
+                point.x = newPosition.x
+                point.y = newPosition.y
+                graphPoints.updateValue(point, forKey: i)
+            } else {
+                let point = GraphPoint(x: newPosition.x, y: newPosition.y)
+                graphPoints.updateValue(point, forKey: i)
+            }
         }
     }
     
     // Same as a above, but can take an array with the indicies of the activated points rather than a range.
     internal func setPlotPointPositions(forNewlyActivatedPoints activatedPoints: [Int], withData data: [Double]) {
         
-        var index = 0
-        for activatedPointIndex in activatedPoints {
+        for (i, activatedPointIndex) in activatedPoints.enumerated() {
             
-            let dataPosition = index
-            let value = data[dataPosition]
+            let value = data[i]
             
             let newPosition = graphViewDrawingDelegate.calculatePosition(atIndex: activatedPointIndex, value: value)
-            graphPoints[activatedPointIndex].x = newPosition.x
-            graphPoints[activatedPointIndex].y = newPosition.y
-            
-            index += 1
+            if graphPoints.keys.contains(activatedPointIndex), let point = graphPoints[activatedPointIndex] {
+                point.x = newPosition.x
+                point.y = newPosition.y
+                graphPoints.updateValue(point, forKey: activatedPointIndex)
+            } else {
+                let point = GraphPoint(x: newPosition.x, y: newPosition.y)
+                graphPoints.updateValue(point, forKey: activatedPointIndex)
+            }
         }
     }
     
@@ -198,12 +207,10 @@ open class Plot {
     // Needs to be called when the range has changed.
     internal func animatePlotPointPositions(forPoints pointsToAnimate: CountableRange<Int>, withData data: [Double], withDelay delay: Double) {
         // For any visible points, kickoff the animation to their new position after the axis' min/max has changed.
-        var dataIndex = 0
-        for pointIndex in pointsToAnimate {
-            let newPosition = graphViewDrawingDelegate.calculatePosition(atIndex: pointIndex, value: data[dataIndex])
+        for (i, pointIndex) in pointsToAnimate.enumerated() {
+            let newPosition = graphViewDrawingDelegate.calculatePosition(atIndex: pointIndex, value: data[i])
             let point = graphPoints[pointIndex]
-            animate(point: point, to: newPosition, withDelay: Double(dataIndex) * delay)
-            dataIndex += 1
+            animate(point: point!, to: newPosition, withDelay: Double(i) * delay)
         }
     }
     
@@ -228,7 +235,7 @@ open class Plot {
     }
     
     internal func graphPoint(forIndex index: Int) -> GraphPoint {
-        return graphPoints[index]
+        return graphPoints[index]!
     }
 }
 
