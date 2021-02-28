@@ -47,9 +47,17 @@ import UIKit
     /// Forces the graph's minimum to always be zero. Used in conjunction with shouldAutomaticallyDetectRange or shouldAdaptRange, if you want to force the minimum to stay at 0 rather than the detected minimum.
     @IBInspectable open var shouldRangeAlwaysStartAtZero: Bool = false
     /// The minimum value for the y-axis. This is ignored when shouldAutomaticallyDetectRange or shouldAdaptRange = true
-    @IBInspectable open var rangeMin: Double = 0
+    @IBInspectable open var rangeMin: Double = 0 {
+        didSet {
+            self.range = (min: rangeMin, max: self.range.max)
+        }
+    }
     /// The maximum value for the y-axis. This is ignored when shouldAutomaticallyDetectRange or shouldAdaptRange = true
-    @IBInspectable open var rangeMax: Double = 100
+    @IBInspectable open var rangeMax: Double = 100 {
+        didSet {
+            self.range = (min: self.range.min, max: rangeMax)
+        }
+    }
     
     // Adapting & Animations
     // #####################
